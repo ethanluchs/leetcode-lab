@@ -1,0 +1,12 @@
+services:
+  lab:
+    build:
+      context: .
+      # For the full Grind 75 instead of the focused five:
+      #   args:
+      #     GEN_ARGS: "-t grind-75"
+    image: leetcode-lab:1.0
+    volumes:
+      - ./work:/work
+    stdin_open: true
+    tty: true

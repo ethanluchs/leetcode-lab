@@ -1,0 +1,20 @@
+{
+  "name": "LeetCode Lab",
+  // Reuse the compose service so the terminal path and the dev container
+  // path run the exact same container.
+  "dockerComposeFile": "../compose.yaml",
+  "service": "lab",
+  "workspaceFolder": "/work",
+  // Keep the image's ENTRYPOINT + CMD so first-run seeding happens.
+  "overrideCommand": false,
+  "remoteUser": "student",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["leetcode"]
+      }
+    }
+  }
+}

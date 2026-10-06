@@ -1,0 +1,7 @@
+# Student work is seeded at first run; keep the folder itself so Docker
+# doesn't create it as root on Linux.
+work/*
+!work/.gitkeep
+
+__pycache__/
+.pytest_cache/
