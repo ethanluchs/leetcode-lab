@@ -3,25 +3,48 @@
 Practice LeetCode problems in Python with real tests, inside one small
 container. No ports, no services, and it works offline once built.
 
-## Before you start
+## Setup
 
-- Install **Docker Desktop** and make sure it's **running** (whale icon in the
-  tray/menu bar). Every command below fails with a "pipe" or "daemon" error if
-  it isn't.
-- Clone this repo into a normal folder, **not** inside OneDrive, iCloud or
-  Dropbox.
+You need **Docker Desktop** and **VS Code** installed.
 
-## Option A: VS Code (recommended)
+1. **Start Docker Desktop** and wait until it says it's running (whale icon
+   in the taskbar/menu bar stops animating).
 
-1. Install the **Dev Containers** extension.
-2. Open this folder in VS Code.
-3. Click **Reopen in Container** when prompted (or run
-   *Dev Containers: Reopen in Container* from the command palette).
+2. **Install the Dev Containers extension** in VS Code: open the Extensions
+   view (`Ctrl+Shift+X`, or `Cmd+Shift+X` on Mac), search **Dev Containers**,
+   and install the one by Microsoft.
 
-The first time takes about a minute. You'll land in `/work` with the problems
-in `leetcode/`, and the **Testing** panel (beaker icon) lists every test case.
+3. **Get the code** into a normal folder, *not* inside OneDrive, iCloud or
+   Dropbox:
 
-## Option B: Terminal only
+   ```bash
+   git clone https://github.com/ethanluchs/leetcode-lab.git
+   ```
+
+   No git? On the GitHub page click **Code → Download ZIP** and unzip it.
+
+4. **Open the `leetcode-lab` folder in VS Code** (**File → Open Folder…**).
+
+5. **Reopen in Container.** Click **Reopen in Container** in the pop-up at the
+   bottom right. If you missed it, press `F1`, type
+   `Dev Containers: Reopen in Container`, and press Enter.
+
+   The first time takes a minute or two while the container builds.
+
+6. **Check it works.** Open a terminal in VS Code (**Terminal → New
+   Terminal**). It opens *inside* the container. Run:
+
+   ```bash
+   cd leetcode/two_sum
+   pytest -q
+   ```
+
+   You should see `15 failed`. That's correct: you haven't solved it yet.
+
+You're set up. Next time, just open the folder in VS Code and it reconnects
+to the container automatically.
+
+### Terminal only (no VS Code)
 
 ```bash
 docker compose build          # ~1 min, once
@@ -29,9 +52,16 @@ docker compose run --rm lab   # opens a shell in the container
 ```
 
 You're now in `/work`, which is the same folder as `./work` on your machine.
-Edit files in any editor on your computer and run tests in the container.
+Edit files in any editor and run tests in the container. `exit` leaves; your
+work stays in `./work`.
 
-`exit` or Ctrl-D leaves. Your work stays in `./work`.
+### If something goes wrong
+
+| Symptom | Fix |
+| --- | --- |
+| `error during connect`, "pipe", "daemon", or `500 Internal Server Error` | Docker Desktop isn't running or got stuck. Quit it fully and start it again. |
+| `cp: cannot create directory '/work/leetcode': Permission denied` (Linux) | See *Linux* under Instructor notes below. |
+| No "Reopen in Container" option | The Dev Containers extension isn't installed (step 2). |
 
 ## The loop
 
