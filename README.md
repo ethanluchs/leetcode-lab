@@ -148,17 +148,6 @@ That's ruff auto-formatting the generated files, not a failure.
 `devcontainer up` prints `Error fetching image details: No manifest found`,
 which is also harmless.
 
-### Hand out a prebuilt image
-
-Campus Wi-Fi is the usual failure point. Build once, then share the file:
-
-```bash
-docker save leetcode-lab:1.0 | gzip > leetcode-lab.tar.gz      # ~80 MB
-```
-
-Students run `docker load -i leetcode-lab.tar.gz`, after which both options
-above use the loaded image instead of building.
-
 ### Linux
 
 The container runs as uid 1000, which is the first user on almost every Linux
@@ -193,17 +182,3 @@ Change it with the `GEN_ARGS` build arg in `compose.yaml`:
 `-t grind-75` (75 problems), `-t blind-75` (75), `-t neetcode-150` (150),
 `-d Easy`, `-s two_sum`, or `--all`. The package bundles 1,404 problems.
 
-### Teaching angles
-
-- **Build time vs run time.** `lcpy gen` runs in a `RUN` layer, while seeding
-  runs in the entrypoint. Ask why before explaining.
-- **Layer caching.** Uncomment the Graphviz block in the Dockerfile and
-  rebuild: everything after it rebuilds. Move it to the bottom and rebuild
-  again: the earlier layers come from cache.
-- **Image vs bind mount.** Delete `./work/leetcode` and rerun: the problems
-  come back from the image. Delete the image: your work is still in `./work`.
-- **No network.**
-  `docker run --rm -it --network none -v "$PWD/work:/work" leetcode-lab:1.0`
-  still runs every test.
-- **`run` vs `up`.** This is an interactive shell, not a long-running service,
-  so it's `compose run --rm`, not `compose up`.
