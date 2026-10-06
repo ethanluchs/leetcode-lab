@@ -50,7 +50,6 @@ Each problem folder contains:
 | `solution.py` | **the only file you edit** |
 | `test_solution.py` | the test cases. This is the contract |
 | `helpers.py` | readable assertion output |
-| `playground.ipynb` | scratch notebook |
 | `__init__.py` | package marker |
 
 **Don't edit the tests to make them pass.** They include the LeetCode

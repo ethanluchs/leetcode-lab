@@ -25,8 +25,11 @@ RUN pip install --no-cache-dir \
 
 # Generate at BUILD time from templates bundled in the wheel -- no network
 # needed at run time, so the finished image works offline.
+# Drop playground.ipynb (no Jupyter in this image, so students can't open it)
+# and the __pycache__ dirs left behind by lcpy's post-generation type check.
 RUN mkdir -p /opt/seed \
  && lcpy gen ${GEN_ARGS} -o /opt/seed/leetcode \
+ && find /opt/seed/leetcode \( -name playground.ipynb -o -name __pycache__ \) -prune -exec rm -rf {} + \
  && echo "Baked in $(find /opt/seed/leetcode -maxdepth 1 -mindepth 1 -type d | wc -l) problems"
 
 RUN useradd -m -u 1000 -s /bin/bash student
