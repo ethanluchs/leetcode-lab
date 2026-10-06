@@ -34,6 +34,10 @@ RUN mkdir -p /opt/seed \
 
 RUN useradd -m -u 1000 -s /bin/bash student
 
+# leetcode-py is Apache-2.0, and its wheel doesn't ship the license text.
+# Include it so a saved/shared copy of this image carries the license.
+COPY third_party/leetcode-py/LICENSE /usr/share/doc/leetcode-py-sdk/LICENSE
+
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 # Strip CRLF in case the repo was checked out on Windows without .gitattributes
 # (e.g. downloaded as a zip). A CRLF shebang fails with a misleading
