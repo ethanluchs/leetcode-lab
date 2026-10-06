@@ -131,11 +131,28 @@ above use the loaded image instead of building.
 
 ### Linux
 
-`work/` is committed (via `work/.gitkeep`) so it's owned by the student's own
-user. If Docker had to create it, it would be owned by root and first-run
-seeding would fail with "permission denied". If a Linux student's uid isn't
-1000, they may also need `sudo chown -R $USER work` after the first run.
-macOS and Windows (Docker Desktop) need nothing extra.
+The container runs as uid 1000, which is the first user on almost every Linux
+laptop, so most Linux students need nothing extra. macOS and Windows (Docker
+Desktop) never need anything extra.
+
+If a Linux student's `id -u` isn't 1000 (shared or university-managed
+machines), the first run fails with
+`cp: cannot create directory '/work/leetcode': Permission denied`.
+Run as their own uid instead:
+
+```bash
+docker compose run --rm --user "$(id -u):$(id -g)" lab
+```
+
+The prompt then shows `I have no name!`, which is cosmetic; tests and edits
+work normally.
+
+`work/` is committed (via `work/.gitkeep`) on purpose. If it's missing, Docker
+creates it owned by root and the first run fails with the same error even
+for uid 1000. Fix: `sudo rm -rf work && mkdir work`.
+
+Tested with Docker Desktop's WSL2 integration (Ubuntu 24.04), which passes
+uids through like native Docker Engine. Not tested on a native Linux install.
 
 ### Picking the problem set
 
