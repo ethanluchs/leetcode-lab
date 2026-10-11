@@ -59,56 +59,131 @@ You're now in `/work`, which is the same folder as `./work` on your machine.
 Edit files in any editor and run tests in the container. `exit` leaves; your
 work stays in `./work`.
 
-### If something goes wrong
+## Tutorial
 
-| Symptom | Fix |
-| --- | --- |
-| `error during connect`, "pipe", "daemon", or `500 Internal Server Error` | Docker Desktop isn't running or got stuck. Quit it fully and start it again. |
-| `cp: cannot create directory '/work/leetcode': Permission denied` (Linux) | See *Linux* under Instructor notes below. |
-| No "Reopen in Container" option | The Dev Containers extension isn't installed (step 2). |
+Every command below runs in a terminal **inside the container** (in VS Code,
+**Terminal → New Terminal** after reopening in the container). The prompt
+shows `student@...:/work`. If it doesn't, you're on your own machine and the
+tests won't run properly.
 
-## The loop
+### 1. Pick a problem and read it
 
 ```bash
+ls leetcode                  # the problems you have
 cd leetcode/two_sum
-cat README.md          # the problem statement
-# ... edit solution.py ...
-pytest -q              # red -> green
 ```
 
 Each problem folder contains:
 
 | File | What it's for |
 | --- | --- |
-| `README.md` | problem statement, difficulty, topics |
-| `solution.py` | **the only file you edit** |
-| `test_solution.py` | the test cases. This is the contract |
-| `helpers.py` | readable assertion output |
-| `__init__.py` | package marker |
+| `README.md` | the problem statement, difficulty and topics |
+| `solution.py` | **your code goes here** |
+| `test_solution.py` | the test cases |
+| `helpers.py` | runs your solution and checks the answer (used by the tests) |
+| `__init__.py` | lets pytest import the folder; ignore it |
 
-**Don't edit the tests to make them pass.** They include the LeetCode
-examples plus edge cases, so green here really means green.
+Open `README.md` in VS Code and right-click → **Open Preview** to read it
+nicely formatted, or run `cat README.md`.
 
-A few cases pass before you've written anything (an empty stub happens to
-return the right answer for some inputs). Only all-green counts.
-
-## Useful pytest flags
+### 2. Run the tests
 
 ```bash
-pytest -q              # quiet
-pytest -x              # stop at the first failure
-pytest -k nums0        # only cases whose id contains "nums0"
-pytest -s              # show printed output
-pytest                 # from /work: every problem, every case
+pytest -q
 ```
 
-## Looking at data structures
+Each `.` is a passing case and each `F` a failing one, with a summary at the
+end like `15 failed`. You haven't written anything yet, so that's expected.
+
+A few cases may pass before you've written any code, because an empty answer
+happens to be correct for some inputs. Only all-green counts.
+
+### 3. Write your solution
+
+Open `solution.py`. You'll find the function already set up with a `TODO`:
+
+```python
+class Solution:
+    # Time: O(?)
+    # Space: O(?)
+    def two_sum(self, nums: list[int], target: int) -> list[int]:
+        # TODO: Implement two_sum
+        return []
+```
+
+Replace `return []` with your solution, save, and run `pytest -q` again.
+Repeat until you see only passes, e.g. `15 passed`. Filling in the
+`Time`/`Space` comments is good practice for interviews.
+
+### 4. Zero in on failures
+
+```bash
+pytest -x              # stop at the first failing case
+pytest -v              # list every case by name, PASSED or FAILED
+pytest --lf            # re-run only the cases that failed last time
+pytest -k nums3        # run only cases whose name contains "nums3"
+```
+
+Case names come from their position in the test list, counting from 0. For
+example `test_two_sum[nums3-10-expected3]` is the **4th** case.
+
+### 5. See what went wrong
+
+A failure only says `AssertionError`; it doesn't show your answer. To see
+more, run with `-s`, which shows each case's inputs and anything you
+`print()`:
+
+```bash
+pytest -s -k nums3
+```
+
+```
+... | DEBUG | ... - Running test_two_sum(nums=[2, 5, 5, 11], target=10, expected=[1, 2])
+```
+
+Add `print(...)` lines inside your solution to inspect values, and remove
+them when you're done.
+
+### 6. Add your own test cases
+
+Think of an edge case the tests miss? Add it. In `test_solution.py`, every
+line in the list under `@pytest.mark.parametrize` is one test case. The
+values appear in the same order as the names on the line above:
+
+```python
+    @pytest.mark.parametrize(
+        "nums, target, expected",
+        [
+            ([2, 7, 11, 15], 9, [0, 1]),
+            # ...
+            ([0, 1], 1, [0, 1]),
+            ([4, 6, 1], 7, [1, 2]),      # <- your new case
+        ],
+    )
+```
+
+Run `pytest -q` and your case is included. Make sure your expected answer is
+actually right: a wrong expected value fails even when your code is correct.
+
+**Add cases freely, but never change or delete the existing ones to make
+them pass.** They're the contract, and they include the LeetCode examples
+plus edge cases.
+
+Trees and linked lists are written as lists, the same way LeetCode writes
+them: level by level, with `None` for a missing child. In
+`invert_binary_tree`, a case looks like this:
+
+```python
+            ([4, 2, 7, 1, 3, 6, 9], [4, 7, 2, 9, 6, 3, 1]),
+#             input tree             expected tree
+```
+
+To see what a list looks like as a tree, try this in `python`:
 
 ```python
 from leetcode_py import TreeNode, ListNode
 
-root = TreeNode.from_list([3, 9, 20, None, None, 15, 7])
-print(root)
+print(TreeNode.from_list([3, 9, 20, None, None, 15, 7]))
 # 3
 # ├── 9
 # └── 20
@@ -118,6 +193,33 @@ print(root)
 print(ListNode.from_list([1, 2, 3]))
 # 1 -> 2 -> 3
 ```
+
+### 7. Run everything
+
+From `/work` (`cd /work`), `pytest -q` runs every case of every problem. To
+run one problem from there, give its folder: `pytest -q leetcode/two_sum`.
+
+### 8. Start a problem over
+
+The container keeps a clean copy of every problem. To reset one solution:
+
+```bash
+cp /opt/seed/leetcode/two_sum/solution.py /work/leetcode/two_sum/
+```
+
+### 9. Get more problems
+
+```bash
+lcpy list                                  # browse all available problems
+lcpy gen -n 15 -o /work/leetcode           # add problem #15 (3Sum)
+lcpy gen -s valid_anagram -o /work/leetcode  # or add one by name
+```
+
+This works offline and takes a few seconds. Problem folders are named after
+the problem, not its number: problem 15 appears as `leetcode/three_sum`.
+
+Your work lives in `./work` on your own computer, so it's safe even if the
+container is deleted or rebuilt.
 
 ---
 
